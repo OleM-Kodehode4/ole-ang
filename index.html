@@ -1,11 +1,59 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="no">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nordlys analyse</title>
-    <link rel="stylesheet" href="./styles.css" />
-    <script src="./script.js" defer></script>
+    <title>Nordlystracker</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
   </head>
-  <body></body>
+  <body>
+    <!DOCTYPE html>
+    <html lang="no">
+      <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Northern Lights Tracker</title>
+        <link rel="stylesheet" href="styles.css" />
+      </head>
+      <body>
+        <div class="navbar">
+          <div class="navbar-text">
+            <nav>
+              <ul>
+                <li><a href="#">About Northern Lights</a></li>
+                <li><a href="#">Destinations</a></li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+
+        <div class="city-search">
+          <div class="search-container">
+            <input
+              type="text"
+              id="city-input"
+              placeholder="Search for a city" />
+            <button id="grad">Search</button>
+          </div>
+        </div>
+        <br />
+
+        <section class="city-info">
+          <div class="city-image">
+            <img id="city-image" src="./pics/tromso-1.jpg" alt="Tromsø" />
+          </div>
+          <div class="city-description">
+            <h3>Tromsø</h3>
+            <p>
+              Tromsø, located above the Arctic Circle, is one of the best places
+              to see the Northern Lights.
+            </p>
+          </div>
+        </section>
+
+        <br />
+      </body>
+    </html>
+  </body>
 </html>

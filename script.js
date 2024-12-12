@@ -1,4 +1,7 @@
-function createNavbar() {
+document.addEventListener("DOMContentLoaded", function () {
+  const body = document.querySelector("body");
+
+  // Navbar
   const navbar = document.createElement("div");
   navbar.classList.add("navbar");
 
@@ -13,23 +16,21 @@ function createNavbar() {
   aboutAnchor.href = "#";
   aboutAnchor.textContent = "About Northern Lights";
   aboutLink.appendChild(aboutAnchor);
+  ul.appendChild(aboutLink);
 
   const destinationsLink = document.createElement("li");
   const destinationsAnchor = document.createElement("a");
   destinationsAnchor.href = "#";
   destinationsAnchor.textContent = "Destinations";
   destinationsLink.appendChild(destinationsAnchor);
-
-  ul.appendChild(aboutLink);
   ul.appendChild(destinationsLink);
+
   nav.appendChild(ul);
   navbarText.appendChild(nav);
   navbar.appendChild(navbarText);
+  body.appendChild(navbar);
 
-  document.body.appendChild(navbar);
-}
-
-function createCitySearch() {
+  // City search
   const citySearch = document.createElement("div");
   citySearch.classList.add("city-search");
 
@@ -48,43 +49,49 @@ function createCitySearch() {
   searchContainer.appendChild(cityInput);
   searchContainer.appendChild(searchButton);
   citySearch.appendChild(searchContainer);
+  body.appendChild(citySearch);
 
-  document.body.appendChild(citySearch);
-}
+  const br = document.createElement("br");
+  body.appendChild(br);
 
-function createCityInfo() {
-  const cityInfo = document.createElement("section");
-  cityInfo.classList.add("city-info");
+  // Legge til destinasjonsinformasjon
+  const destinationContainer = document.createElement("div");
 
-  const cityImageContainer = document.createElement("div");
-  cityImageContainer.classList.add("city-image");
+  // Funksjon for å lage en destinasjon
+  function createDestination(cityName) {
+    const destination = document.createElement("div");
+    destination.classList.add("destination");
 
-  const cityImage = document.createElement("img");
-  cityImage.id = "city-image";
-  cityImage.src = "./pics/tromso-1.jpg";
-  cityImage.alt = "Tromsø";
+    const txtColor = document.createElement("span");
+    txtColor.classList.add("txt-color");
+    txtColor.textContent = cityName;
 
-  cityImageContainer.appendChild(cityImage);
+    const progressContainer = document.createElement("div");
+    progressContainer.classList.add("progress-container");
 
-  const cityDescription = document.createElement("div");
-  cityDescription.classList.add("city-description");
+    // Legge til noen eksempelprogresjoner for byene
+    for (let i = 0; i < 3; i++) {
+      const progress = document.createElement("div");
+      progress.classList.add("progress");
+      const progressText = document.createElement("span");
+      progressText.textContent = "try";
+      progress.appendChild(progressText);
+      progressContainer.appendChild(progress);
+    }
 
-  const cityTitle = document.createElement("h3");
-  cityTitle.textContent = "Tromsø";
+    const dropdownButton = document.createElement("button");
+    dropdownButton.classList.add("dropdown");
+    dropdownButton.innerHTML = "&#9660;";
 
-  const cityParagraph = document.createElement("p");
-  cityParagraph.textContent =
-    "Tromsø, located above the Arctic Circle, is one of the best places to see the Northern Lights.";
+    destination.appendChild(txtColor);
+    destination.appendChild(progressContainer);
+    destination.appendChild(dropdownButton);
+    destinationContainer.appendChild(destination);
+  }
 
-  cityDescription.appendChild(cityTitle);
-  cityDescription.appendChild(cityParagraph);
+  // Lagde destinasjonene Tromsø, Kirkenes, Varanger, Senja
+  const cities = ["Tromsø", "Kirkenes", "Varanger", "Senja"];
+  cities.forEach((city) => createDestination(city));
 
-  cityInfo.appendChild(cityImageContainer);
-  cityInfo.appendChild(cityDescription);
-
-  document.body.appendChild(cityInfo);
-}
-
-createNavbar();
-createCitySearch();
-createCityInfo();
+  body.appendChild(destinationContainer);
+});

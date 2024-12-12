@@ -126,23 +126,23 @@ document.addEventListener("DOMContentLoaded", function () {
   const allCities = [
     {
       name: "Tromsø",
-      image: "https://example.com/tromso.jpg",
+      image: "./pics/tromso-1.jpg",
       description: "Tromsø is known for its stunning Northern Lights.",
     },
     {
       name: "Kirkenes",
-      image: "https://example.com/kirkenes.jpg",
+      image: "./pics/kirkenes-1.jpg",
       description:
         "Kirkenes is the gateway to the Arctic and famous for the Snowhotel.",
     },
     {
       name: "Varanger",
-      image: "https://example.com/varanger.jpg",
+      image: "./pics/varanger-1.jpg",
       description: "Varanger is renowned for its pristine nature and wildlife.",
     },
     {
       name: "Senja",
-      image: "https://example.com/senja.jpg",
+      image: "./pics/senja-1.jpg",
       description: "Senja is an island known for its dramatic landscapes.",
     },
     {

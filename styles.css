@@ -16,6 +16,13 @@ body {
   align-items: center;
 }
 
+.top-bar{
+  position: relative;
+  width:100%;
+  height: 50px;
+  background-color: rgb(62, 62, 62);
+}
+
 .navbar {
   position: relative;
   width: 100%;

@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Flere byer å velge fra, med bilde og beskrivelse
-  const cities = [
+  const allCities = [
     {
       name: "Tromsø",
       image: "https://example.com/tromso.jpg",
@@ -170,26 +170,28 @@ document.addEventListener("DOMContentLoaded", function () {
     },
   ];
 
-  // Fisher-Yates shuffle for å randomisere byene
-  function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]]; // Bytt plass på elementene
-    }
-  }
-
-  // Randomiser listen av byer
-  shuffleArray(cities);
-
-  // Lag destinasjonene for de første 3 randomiserte byene
-  cities.slice(0, 3).forEach((city) => {
+  // Lag destinasjonene for alle byene
+  allCities.forEach((city) => {
     createDestination(city.name, city.image, city.description);
   });
 
   body.appendChild(destinationContainer);
 
+  // Funksjon for å vise eller skjule varslingen
+  function showNotification(message) {
+    const notification = document.createElement("div");
+    notification.classList.add("notification");
+    notification.textContent = message;
+    citySearch.appendChild(notification);
+
+    // Fjern varslingen etter en kort stund
+    setTimeout(function () {
+      notification.remove();
+    }, 3000); // Varsling forsvinner etter 3 sekunder
+  }
+
   // Søkefunksjon
-  searchButton.addEventListener("click", function () {
+  function searchCities() {
     const searchTerm = cityInput.value.toLowerCase().trim(); // Hent tekst fra input og gjør den til små bokstaver
 
     const destinations = document.querySelectorAll(".destination");
@@ -206,8 +208,19 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    if (!found) {
-      alert("No cities found matching your search."); // Hvis ingen byer matcher, vis en melding
+    // Hvis ingen resultater er funnet, vis varsling
+    if (!found && searchTerm) {
+      showNotification("No city found with that name.");
+    }
+  }
+
+  // Event listener for "Search" button click
+  searchButton.addEventListener("click", searchCities);
+
+  // Event listener for "Enter" key press in the input field
+  cityInput.addEventListener("keypress", function (event) {
+    if (event.key === "Enter") {
+      searchCities();
     }
   });
 });

@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const cityInput = document.createElement("input");
   cityInput.type = "text";
   cityInput.id = "city-input";
-  cityInput.placeholder = "Search for a city";
+  cityInput.placeholder = "Enter a location";
 
   const searchButton = document.createElement("button");
   searchButton.id = "grad";
@@ -54,44 +54,148 @@ document.addEventListener("DOMContentLoaded", function () {
   const br = document.createElement("br");
   body.appendChild(br);
 
-  // Legge til destinasjonsinformasjon
+  // Destination container
   const destinationContainer = document.createElement("div");
+  destinationContainer.classList.add("destination-container");
+  body.appendChild(destinationContainer);
 
-  // Funksjon for å lage en destinasjon
-  function createDestination(cityName) {
+  // Fetch aurora probability
+  async function fetchAuroraProbability(lat, lon) {
+    const response = await fetch(
+      `https://api.auroras.live/v1/?type=ace&data=probability&lat=${lat}&long=${lon}`
+    );
+    return await response.json();
+  }
+
+  // Fetch 3-day aurora forecast
+  async function fetchAuroraForecast(lat, lon) {
+    const response = await fetch(
+      `https://api.auroras.live/v1/?type=ace&data=threeday&lat=${lat}&long=${lon}`
+    );
+    const data = await response.json();
+    console.log("3-Day Aurora Forecast API Response:", data); // Debugging log
+    return data;
+  }
+
+  // Calculate average values for each day
+  function calculateDailyAverages(values) {
+    return values.map((dayArray) => {
+      const total = dayArray.reduce(
+        (sum, entry) => sum + parseFloat(entry.value),
+        0
+      );
+      const average = total / dayArray.length;
+      return average.toFixed(2); // Round to 2 decimal places
+    });
+  }
+
+  // Fetch city data and aurora details
+  async function fetchAuroraData(cityName, callback) {
+    try {
+      const locationResponse = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+          cityName
+        )}&format=json&limit=1`
+      );
+      const locationData = await locationResponse.json();
+
+      if (!locationData.length) {
+        throw new Error("Location not found");
+      }
+
+      const { lat, lon, display_name } = locationData[0];
+
+      const [probability, forecast] = await Promise.all([
+        fetchAuroraProbability(lat, lon),
+        fetchAuroraForecast(lat, lon),
+      ]);
+
+      callback({ lat, lon, displayName: display_name, probability, forecast });
+    } catch (error) {
+      console.error("Error fetching aurora data:", error.message);
+      callback({ error: error.message });
+    }
+  }
+
+  // Create destination UI
+  function createDestination(data) {
+    const { displayName, probability, forecast } = data;
+
     const destination = document.createElement("div");
     destination.classList.add("destination");
 
     const txtColor = document.createElement("span");
     txtColor.classList.add("txt-color");
-    txtColor.textContent = cityName;
+    txtColor.textContent = displayName;
 
     const progressContainer = document.createElement("div");
     progressContainer.classList.add("progress-container");
 
-    // Legge til noen eksempelprogresjoner for byene
-    for (let i = 0; i < 3; i++) {
-      const progress = document.createElement("div");
-      progress.classList.add("progress");
-      const progressText = document.createElement("span");
-      progressText.textContent = "try";
-      progress.appendChild(progressText);
-      progressContainer.appendChild(progress);
+    // Current probability circle
+    const currentCircle = document.createElement("div");
+    currentCircle.classList.add("progress");
+    currentCircle.style.backgroundColor = probability.colour || "green";
+    currentCircle.textContent = probability.value || "N/A";
+    progressContainer.appendChild(currentCircle);
+
+    // Display averaged 3-day forecast in dropdown
+    const forecastDiv = document.createElement("div");
+    forecastDiv.classList.add("forecast");
+    const forecastText = document.createElement("div");
+    forecastText.classList.add("forecast-text");
+
+    if (forecast.values) {
+      const dailyAverages = calculateDailyAverages(forecast.values);
+      forecastText.innerHTML = `
+        <strong>3-Day Aurora Forecast Averages:</strong><br>
+        Day 1: ${dailyAverages[0]}kp<br>
+        Day 2: ${dailyAverages[1]}kp<br>
+        Day 3: ${dailyAverages[2]}kp
+      `;
+    } else {
+      forecastText.textContent = "No 3-day forecast available.";
     }
 
     const dropdownButton = document.createElement("button");
     dropdownButton.classList.add("dropdown");
     dropdownButton.innerHTML = "&#9660;";
 
+    const cityInfo = document.createElement("div");
+    cityInfo.classList.add("city-info");
+    cityInfo.style.display = "none";
+
+    cityInfo.appendChild(forecastDiv);
+    cityInfo.appendChild(forecastText);
+
+    dropdownButton.addEventListener("click", function () {
+      cityInfo.style.display =
+        cityInfo.style.display === "none" ? "block" : "none";
+    });
+
     destination.appendChild(txtColor);
     destination.appendChild(progressContainer);
     destination.appendChild(dropdownButton);
+    destination.appendChild(cityInfo);
     destinationContainer.appendChild(destination);
   }
 
-  // Lagde destinasjonene Tromsø, Kirkenes, Varanger, Senja
-  const cities = ["Tromsø", "Kirkenes", "Varanger", "Senja"];
-  cities.forEach((city) => createDestination(city));
+  searchButton.addEventListener("click", function () {
+    const cityName = cityInput.value.trim();
+    if (!cityName) {
+      alert("Please enter a location");
+      return;
+    }
 
-  body.appendChild(destinationContainer);
+    destinationContainer.innerHTML = "";
+
+    fetchAuroraData(cityName, (data) => {
+      if (data.error) {
+        const errorDiv = document.createElement("div");
+        errorDiv.textContent = `Error: ${data.error}`;
+        destinationContainer.appendChild(errorDiv);
+      } else {
+        createDestination(data);
+      }
+    });
+  });
 });
